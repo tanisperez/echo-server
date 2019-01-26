@@ -23,53 +23,53 @@ import com.tanis.github.nio.handler.WriteHandler;
 
 public class EchoNonBlockingServer {
 
-	public static void main(final String[] args) throws IOException {
-		System.out.println("Starting up EchoNonBlockingServer");
+    public static void main(final String[] args) throws IOException {
+        System.out.println("Starting up EchoNonBlockingServer");
 
-		final ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
-		serverSocketChannel.bind(new InetSocketAddress(8080));
-		serverSocketChannel.configureBlocking(false);
+        final ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+        serverSocketChannel.bind(new InetSocketAddress(8080));
+        serverSocketChannel.configureBlocking(false);
 
-		final Selector selector = Selector.open();
-		serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+        final Selector selector = Selector.open();
+        serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-		final ExecutorService threadPool = Executors.newFixedThreadPool(10);
+        final ExecutorService threadPool = Executors.newFixedThreadPool(10);
 
-		final Map<SocketChannel, Queue<ByteBuffer>> pendingData = new ConcurrentHashMap<>();
-		final Queue<Runnable> selectorActions = new ConcurrentLinkedQueue<>();
+        final Map<SocketChannel, Queue<ByteBuffer>> pendingData = new ConcurrentHashMap<>();
+        final Queue<Runnable> selectorActions = new ConcurrentLinkedQueue<>();
 
-		final Handler acceptHandler = new AcceptHandler(pendingData);
-		final Handler readHandler = new ReadHandler(threadPool, selectorActions, pendingData);
-		final Handler writeHandler = new WriteHandler(pendingData);
+        final Handler acceptHandler = new AcceptHandler(pendingData);
+        final Handler readHandler = new ReadHandler(threadPool, selectorActions, pendingData);
+        final Handler writeHandler = new WriteHandler(pendingData);
 
-		while (true) {
-			selector.select();
-			processSelectorActions(selectorActions);
+        while (true) {
+            selector.select();
+            processSelectorActions(selectorActions);
 
-			final Set<SelectionKey> keys = selector.selectedKeys();
-			for (final Iterator<SelectionKey> iterator = keys.iterator(); iterator.hasNext();) {
-				final SelectionKey key = iterator.next();
-				iterator.remove();
+            final Set<SelectionKey> keys = selector.selectedKeys();
+            for (final Iterator<SelectionKey> iterator = keys.iterator(); iterator.hasNext(); ) {
+                final SelectionKey key = iterator.next();
+                iterator.remove();
 
-				if (key.isValid()) {
-					if (key.isAcceptable()) {
-						acceptHandler.handle(key);
-					} else if (key.isReadable()) {
-						readHandler.handle(key);
-					} else if (key.isWritable()) {
-						writeHandler.handle(key);
-					}
-				}
-			}
+                if (key.isValid()) {
+                    if (key.isAcceptable()) {
+                        acceptHandler.handle(key);
+                    } else if (key.isReadable()) {
+                        readHandler.handle(key);
+                    } else if (key.isWritable()) {
+                        writeHandler.handle(key);
+                    }
+                }
+            }
 
-		}
-	}
+        }
+    }
 
-	private static void processSelectorActions(final Queue<Runnable> selectorActions) {
-		while (!selectorActions.isEmpty()) {
-			final Runnable action = selectorActions.poll();
-			action.run();
-		}
-	}
+    private static void processSelectorActions(final Queue<Runnable> selectorActions) {
+        while (!selectorActions.isEmpty()) {
+            final Runnable action = selectorActions.poll();
+            action.run();
+        }
+    }
 
 }

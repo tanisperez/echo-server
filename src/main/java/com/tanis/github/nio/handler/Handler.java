@@ -5,6 +5,6 @@ import java.nio.channels.SelectionKey;
 
 public interface Handler {
 
-	void handle(final SelectionKey selectionKey) throws IOException;
+    void handle(final SelectionKey selectionKey) throws IOException;
 
 }

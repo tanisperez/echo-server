@@ -11,22 +11,22 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AcceptHandler implements Handler {
 
-	private final Map<SocketChannel, Queue<ByteBuffer>> pendingData;
+    private final Map<SocketChannel, Queue<ByteBuffer>> pendingData;
 
-	public AcceptHandler(final Map<SocketChannel, Queue<ByteBuffer>> pendingData) {
-		this.pendingData = pendingData;
-	}
+    public AcceptHandler(final Map<SocketChannel, Queue<ByteBuffer>> pendingData) {
+        this.pendingData = pendingData;
+    }
 
-	@Override
-	public void handle(final SelectionKey selectionKey) throws IOException {
-		final ServerSocketChannel serverSocketChannel = (ServerSocketChannel) selectionKey.channel();
+    @Override
+    public void handle(final SelectionKey selectionKey) throws IOException {
+        final ServerSocketChannel serverSocketChannel = (ServerSocketChannel) selectionKey.channel();
 
-		final SocketChannel socketChannel = serverSocketChannel.accept();
-		socketChannel.configureBlocking(false);
-		System.out.println("Connection accepted from " + socketChannel);
+        final SocketChannel socketChannel = serverSocketChannel.accept();
+        socketChannel.configureBlocking(false);
+        System.out.println("Connection accepted from " + socketChannel);
 
-		this.pendingData.put(socketChannel, new ConcurrentLinkedQueue<ByteBuffer>());
-		socketChannel.register(selectionKey.selector(), SelectionKey.OP_READ);
-	}
+        this.pendingData.put(socketChannel, new ConcurrentLinkedQueue<>());
+        socketChannel.register(selectionKey.selector(), SelectionKey.OP_READ);
+    }
 
 }

@@ -1,52 +1,71 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.github.tanisperez</groupId>
-	<artifactId>nio-server</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>nio-server</name>
-	<description>Java Non-Blocking IO Server Socket</description>
+    <groupId>com.github.tanisperez</groupId>
+    <artifactId>echo</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>echo-server</name>
+    <description>Java Echo Server Socket</description>
+    <packaging>pom</packaging>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.8</java.version>
-		<project-main.class>com.tanis.github.nio.server.EchoNonBlockingServer</project-main.class>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
 
-		<maven-compiler-plugin.version>3.0</maven-compiler-plugin.version>
-		<maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
-	</properties>
+        <maven-compiler-plugin.version>3.0</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+        <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
 
-	<build>
-		<plugins>
+        <logback.version>1.2.3</logback.version>
+    </properties>
 
-			<!-- Maven Compiler Plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-				</configuration>
-			</plugin>
+    <modules>
+        <module>io-server</module>
+        <module>nio-server</module>
+        <module>echo-client</module>
+    </modules>
 
-			<!-- Maven Jar Plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>${maven-jar-plugin.version}</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>${project-main.class}</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
+    <dependencyManagement>
+        <dependencies>
 
-		</plugins>
-	</build>
+            <!-- Logback-Classic -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+
+    <build>
+
+        <pluginManagement>
+            <plugins>
+                <!-- Maven Compiler Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                    </configuration>
+                </plugin>
+
+                <!-- Maven Assembly Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${maven-assembly-plugin.version}</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
+    </build>
 
 </project>

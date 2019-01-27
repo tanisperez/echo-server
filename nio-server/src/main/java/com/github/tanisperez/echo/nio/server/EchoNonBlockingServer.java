@@ -23,9 +23,6 @@ import org.slf4j.LoggerFactory;
 
 public class EchoNonBlockingServer extends Thread {
 
-    /**
-     * LOGGER
-     */
     private static final Logger LOGGER = LoggerFactory.getLogger(EchoNonBlockingServer.class);
 
     private final int port;
@@ -72,6 +69,8 @@ public class EchoNonBlockingServer extends Thread {
                 }
             } catch (final IOException exception) {
                 LOGGER.error(exception.getMessage());
+                this.selector.selectedKeys();
+                this.selector.wakeup();
             }
         }
 

@@ -31,22 +31,30 @@ public class ReadHandler implements Handler {
     public void handle(final SelectionKey selectionKey) throws IOException {
         final SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
         final ByteBuffer buffer = ByteBuffer.allocateDirect(80);
-        final int read = socketChannel.read(buffer);
 
-        if (read == -1) {
-            this.pendingData.remove(socketChannel);
-            socketChannel.close();
+        try {
+            int read = socketChannel.read(buffer);
+            if (read == -1) {
+                removeConnection(socketChannel);
+            } else if (read > 0) {
+                this.threadPool.submit(() -> {
+                    LOGGER.info("Read {} bytes from {}", read, socketChannel);
 
-            LOGGER.info("Disconnected {}", socketChannel);
-        } else if (read > 0) {
-            this.threadPool.submit(() -> {
-                LOGGER.info("Read from {}", socketChannel);
-
-                this.pendingData.get(socketChannel).add(buffer);
-                this.selectorActions.add(() -> selectionKey.interestOps(SelectionKey.OP_WRITE));
-                selectionKey.selector().wakeup();
-            });
+                    this.pendingData.get(socketChannel).add(buffer);
+                    this.selectorActions.add(() -> selectionKey.interestOps(SelectionKey.OP_WRITE));
+                    selectionKey.selector().wakeup();
+                });
+            }
+        } catch (final IOException exception) {
+            removeConnection(socketChannel); // Client forced to disconnect
         }
+    }
+
+    private void removeConnection(final SocketChannel socketChannel) throws IOException {
+        this.pendingData.remove(socketChannel);
+        socketChannel.close();
+
+        LOGGER.info("Disconnected {}", socketChannel);
     }
 
 }

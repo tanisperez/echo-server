@@ -21,6 +21,16 @@
         <project-main.class>com.github.tanisperez.echo.client.EchoClient</project-main.class>
     </properties>
 
+    <dependencies>
+
+        <!-- Logback-Core -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+
+    </dependencies>
+
     <build>
         <plugins>
 
